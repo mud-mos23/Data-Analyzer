@@ -171,22 +171,29 @@
         
         /* Excel-like Grid */
         .excel-grid {
-            border: 1px solid var(--excel-border);
-            border-radius: 4px;
-            overflow: auto;
-            position: relative;
-        }
+    border: 1px solid var(--excel-border);
+    border-radius: 4px;
+    overflow: auto;
+    max-height: 70vh;
+    position: relative;
+    font-size: 12px;
+}
+
         
         .grid-header {
             position: sticky;
             top: 0;
             background: var(--excel-blue);
             color: white;
+            display: table-header-group;
             z-index: 10;
-            display: grid;
-            grid-template-columns: 50px repeat(auto-fit, minmax(150px, 1fr));
         }
         
+        .grid-container {
+    display: table;
+    width: 100%;
+    border-collapse: collapse;
+}
         .header-cell {
             padding: 10px;
             border-right: 1px solid rgba(255,255,255,0.2);
@@ -204,38 +211,83 @@
         }
         
         .grid-body {
-            display: grid;
-            grid-template-columns: 50px repeat(auto-fit, minmax(150px, 1fr));
+            display: table-row-group;
         }
         
         .data-row {
-            display: contents;
+            display: table-row;
         }
+
+        .grid-row {
+    display: table-row;
+}
         
         .data-row:hover .data-cell {
             background: var(--excel-light-blue);
         }
-        
-        .row-number-cell {
-            background: var(--excel-gray);
-            text-align: center;
-            padding: 8px;
-            border-right: 1px solid var(--excel-border);
-            border-bottom: 1px solid var(--excel-border);
-            font-size: 12px;
-            color: #666;
-        }
-        
-        .data-cell {
-            padding: 8px;
-            border-right: 1px solid var(--excel-border);
-            border-bottom: 1px solid var(--excel-border);
-            font-size: 13px;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-            min-width: 150px;
-        }
+
+        .header-cell, .row-number-cell, .data-cell {
+    display: table-cell;
+    padding: 8px 10px;
+    border-right: 1px solid var(--excel-border);
+    border-bottom: 1px solid var(--excel-border);
+    vertical-align: middle;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-width: 100px;
+    max-width: 300px;
+}
+
+.header-cell {
+    background: var(--excel-blue);
+    color: white;
+    font-weight: bold;
+    text-align: center;
+    border-right: 1px solid rgba(255, 255, 255, 0.2);
+    position: sticky;
+    top: 0;
+    z-index: 20;
+}
+
+.row-number-cell {
+    background: var(--excel-gray);
+    text-align: center;
+    color: #666;
+    font-weight: bold;
+    min-width: 50px;
+    max-width: 50px;
+    width: 50px;
+    position: sticky;
+    left: 0;
+    z-index: 15;
+    border-right: 2px solid var(--excel-border);
+}
+
+.data-cell {
+    background: white;
+    text-align: left;
+    min-width: 120px;
+}
+
+/* Scrollbar pour la grille */
+.excel-grid::-webkit-scrollbar {
+    width: 12px;
+    height: 12px;
+}
+
+.excel-grid::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+.excel-grid::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 6px;
+}
+
+.excel-grid::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+}
         
         /* Excel-like Status Bar */
         .status-bar {
