@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Analyzer</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <!-- Chart.js for Visualizations -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="excel-container">
+        <!-- Excel Header -->
+        <div class="excel-header">
+            <div class="logo">
+                <div class="logo-icon">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <div>
+                    <div class="logo-text">Data Analyzer</div>
+                    <div class="version">v1.0 - Advanced Analytics Suite</div>
+                </div>
+            </div>
+            <div class="header-actions">
+                <button class="ribbon-button" onclick="newAnalysis()">
+                    <i class="fas fa-file-excel"></i> Nouveau
+                </button>
+            </div>
+        </div>
+        
+        <!-- Ribbon Menu -->
+        <div class="ribbon">
+            <div class="ribbon-group">
+                <button class="ribbon-button active" onclick="showTab('data')">
+                    <i class="fas fa-table"></i> Données
+                </button>
+                <button class="ribbon-button" onclick="showTab('stats')">
+                    <i class="fas fa-chart-bar"></i> Statistiques
+                </button>
+                <button class="ribbon-button" onclick="showTab('correlation')">
+                    <i class="fas fa-project-diagram"></i> Corrélations
+                </button>
+            </div>
+            
+            <div class="ribbon-group">
+                <button class="ribbon-button" onclick="showTab('regression')">
+                    <i class="fas fa-trend-up"></i> Régressions
+                </button>
+                <button class="ribbon-button" onclick="showTab('tests')">
+                    <i class="fas fa-vial"></i> Tests
+                </button>
+                <button class="ribbon-button" onclick="showTab('timeseries')">
+                    <i class="fas fa-clock"></i> Séries Temp.
+                </button>
+            </div>
+            
+            <div class="ribbon-group">
+                <button class="ribbon-button" onclick="showTab('multivariate')">
+                    <i class="fas fa-cubes"></i> Multivarié
+                </button>
+                <button class="ribbon-button" onclick="showTab('visualization')">
+                    <i class="fas fa-chart-pie"></i> Visualisations
+                </button>
+            </div>
+            
+            <div class="ribbon-group">
+                <button class="ribbon-button" onclick="exportAll()">
+                    <i class="fas fa-download"></i> Exporter Tout
+                </button>
+                <button class="ribbon-button" onclick="printReport()">
+                    <i class="fas fa-print"></i> Imprimer
+                </button>
+            </div>
+        </div>
+        
+        <!-- Formula Bar -->
+        <div class="formula-bar">
+            <span style="font-weight: bold; color: var(--excel-blue);">Analyse :</span>
+            <input type="text" class="formula-input" id="analysisName" placeholder="Nom de l'analyse..." value="Analyse_complete">
+            <button class="ribbon-button" onclick="saveAnalysis()">
+                <i class="fas fa-save"></i> Sauvegarder
+            </button>
+        </div>
+        
+        <!-- Tabs Navigation -->
+        <div class="tabs-container">
+            <div class="tab active" onclick="showTab('data')" data-tab="data">
+                <i class="fas fa-database"></i> Données Brutes
+                <span class="tab-badge" id="data-badge">0</span>
+            </div>
+            <div class="tab" onclick="showTab('overview')" data-tab="overview">
+                <i class="fas fa-eye"></i> Aperçu
+            </div>
+            <div class="tab" onclick="showTab('stats')" data-tab="stats">
+                <i class="fas fa-calculator"></i> Statistiques
+                <span class="tab-badge" id="stats-badge">0</span>
+            </div>
+            <div class="tab" onclick="showTab('correlation')" data-tab="correlation">
+                <i class="fas fa-link"></i> Corrélations
+                <span class="tab-badge" id="corr-badge">0</span>
+            </div>
+            <div class="tab" onclick="showTab('regression')" data-tab="regression">
+                <i class="fas fa-chart-line"></i> Régressions
+                <span class="tab-badge" id="reg-badge">0</span>
+            </div>
+            <div class="tab" onclick="showTab('tests')" data-tab="tests">
+                <i class="fas fa-flask"></i> Tests
+                <span class="tab-badge" id="tests-badge">0</span>
+            </div>
+            <div class="tab" onclick="showTab('timeseries')" data-tab="timeseries">
+                <i class="fas fa-wave-square"></i> Séries Temp.
+            </div>
+            <div class="tab" onclick="showTab('multivariate')" data-tab="multivariate">
+                <i class="fas fa-shapes"></i> Multivarié
+            </div>
+            <div class="tab" onclick="showTab('visualization')" data-tab="visualization">
+                <i class="fas fa-chart-area"></i> Graphiques
+            </div>
+        </div>
+        
+        <!-- Main Content Area -->
+        <div class="content-area">
+            <!-- Data Tab -->
+            <div class="tab-content active" id="data-tab">
+                <div class="upload-zone" onclick="document.getElementById('fileInput').click()" id="uploadZone">
+                    <div class="upload-icon">
+                        <i class="fas fa-file-upload"></i>
+                    </div>
+                    <h3>Cliquez pour sélectionner un fichier</h3>
+                    <p>Formats supportés: CSV, Excel (.xlsx, .xls)</p>
+                    <p><small>Glissez-déposez également supporté</small></p>
+                </div>
+                
+                <input type="file" id="fileInput" accept=".csv,.xlsx,.xls" style="display: none;" onchange="handleFileUpload(this)">
+                
+                <div class="excel-alert alert-info" id="fileInfo" style="display: none;">
+                    <i class="fas fa-info-circle"></i>
+                    <span id="fileInfoText"></span>
+                </div>
+                
+
+                <div class="excel-grid" id="dataGrid" style="display: none;">
+                    <!-- Grid will be populated by JavaScript -->
+                </div>
+                
+                <div class="quick-stats" id="quickStats" style="display: none;">
+                    <!-- Quick stats will be populated by JavaScript -->
+                </div>
+            </div>
+            
+            <!-- Overview Tab -->
+            <div class="tab-content" id="overview-tab">
+                <div class="excel-alert alert-info">
+                    <i class="fas fa-info-circle"></i> Vue d'ensemble des données chargées
+                </div>
+                
+                <div id="overviewContent">
+                    <!-- Overview will be populated by JavaScript -->
+                </div>
+            </div>
+            
+            <!-- Statistics Tab -->
+            <div class="tab-content" id="stats-tab">
+                <div class="excel-alert alert-info">
+                    <i class="fas fa-info-circle"></i> Statistiques descriptives détaillées
+                </div>
+                
+                <div id="statsContent">
+                    <!-- Statistics will be populated by JavaScript -->
+                </div>
+            </div>
+            
+            <!-- Correlation Tab -->
+            <div class="tab-content" id="correlation-tab">
+                <div class="excel-alert alert-info">
+                    <i class="fas fa-info-circle"></i> Analyse des corrélations entre variables
+                </div>
+                
+                <div id="correlationContent">
+                    <!-- Correlation analysis will be populated by JavaScript -->
+                </div>
+            </div>
+            
+            <!-- Regression Tab -->
+            <div class="tab-content" id="regression-tab">
+                <div class="excel-alert alert-info">
+                    <i class="fas fa-info-circle"></i> Analyses de régression linéaire
+                </div>
+                
+                <div id="regressionContent">
+                    <!-- Regression analysis will be populated by JavaScript -->
+                </div>
+            </div>
+            
+            <!-- Tests Tab -->
+            <div class="tab-content" id="tests-tab">
+                <div class="excel-alert alert-info">
+                    <i class="fas fa-info-circle"></i> Tests statistiques avancés
+                </div>
+                
+                <div id="testsContent">
+                    <!-- Statistical tests will be populated by JavaScript -->
+                </div>
+            </div>
+            
+            <!-- Time Series Tab -->
+            <div class="tab-content" id="timeseries-tab">
+                <div class="excel-alert alert-info">
+                    <i class="fas fa-info-circle"></i> Analyse des séries temporelles
+                </div>
+                
+                <div id="timeseriesContent">
+                    <!-- Time series analysis will be populated by JavaScript -->
+                </div>
+            </div>
+            
+            <!-- Multivariate Tab -->
+            <div class="tab-content" id="multivariate-tab">
+                <div class="excel-alert alert-info">
+                    <i class="fas fa-info-circle"></i> Analyses multivariées
+                </div>
+                
+                <div id="multivariateContent">
+                    <!-- Multivariate analysis will be populated by JavaScript -->
+                </div>
+            </div>
+            
+            <!-- Visualization Tab -->
+            <div class="tab-content" id="visualization-tab">
+                <div class="excel-alert alert-info">
+                    <i class="fas fa-info-circle"></i> Visualisations graphiques des données
+                </div>
+                
+                <div id="visualizationContent">
+                    <!-- Visualizations will be populated by JavaScript -->
+                </div>
+            </div>
+        </div>
+        
+        <!-- Status Bar -->
+        <div class="status-bar">
+            <div class="status-item">
+                <i class="fas fa-database"></i>
+                <span id="statusRows">0 lignes</span>
+            </div>
+            <div class="status-item">
+                <i class="fas fa-columns"></i>
+                <span id="statusCols">0 colonnes</span>
+            </div>
+            <div class="status-item">
+                <i class="fas fa-chart-bar"></i>
+                <span id="statusAnalyses">0 analyses</span>
+            </div>
+            <div class="status-item">
+                <i class="fas fa-check-circle"></i>
+                <span id="statusReady">Prêt</span>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="excel-loading">
+            <div class="excel-spinner"></div>
+            <div id="loadingText">Analyse des données en cours...</div>
+            <div style="font-size: 12px; color: #666;">
+                <i class="fas fa-sync-alt fa-spin"></i>
+                <span>Veuillez patienter pendant le traitement</span>
+            </div>
+        </div>
+    </div>
+    
+    <!-- JavaScript -->
+    <script src="/static/script.js"></script>
+</body>
+</html>
