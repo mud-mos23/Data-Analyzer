@@ -551,6 +551,33 @@ function loadOverviewContent(container) {
             if (absCorr >= 0.1) return 'Relation très faible';
             return 'Relation négligeable';
         }
+
+        function animateFavicon(loading) {
+    const favicon = document.querySelector('link[rel="icon"]');
+    if (!favicon) return;
+    
+    if (loading) {
+        // Ajouter une classe pour l'animation
+        favicon.classList.add('loading-favicon');
+        
+        // Alterner entre deux favicons pour l'effet de chargement
+        let counter = 0;
+        window.faviconInterval = setInterval(() => {
+            counter++;
+            const suffix = counter % 2 === 0 ? '' : '_loading';
+            favicon.href = `/static/favicon${suffix}.png`;
+        }, 500);
+    } else {
+        // Arrêter l'animation
+        favicon.classList.remove('loading-favicon');
+        if (window.faviconInterval) {
+            clearInterval(window.faviconInterval);
+        }
+        // Revenir au favicon normal
+        favicon.href = '/static/favicon.png';
+    }
+}
+
         
         // Load regression content
         function loadRegressionContent(container) {
@@ -1198,10 +1225,12 @@ function loadOverviewContent(container) {
         function showLoading(message) {
             document.getElementById('loadingOverlay').style.display = 'flex';
             document.getElementById('loadingText').textContent = message;
+            animateFavicon(true); // Animer le favicon
         }
         
         function hideLoading() {
             document.getElementById('loadingOverlay').style.display = 'none';
+            animateFavicon(false); // Arrêter l'animation du favicon
         }
         
         // Export functions
