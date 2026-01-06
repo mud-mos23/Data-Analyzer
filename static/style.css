@@ -544,3 +544,163 @@
             color: white;
             border-color: var(--excel-blue);
         }
+
+        /* static/style.css - Styles additionnels */
+
+/* Animation pour le favicon dans l'onglet */
+@keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.7; }
+    100% { opacity: 1; }
+}
+
+.loading-favicon {
+    animation: pulse 1.5s infinite;
+}
+
+/* Style pour les notifications */
+.notification-badge {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background: #e74c3c;
+    color: white;
+    font-size: 10px;
+    padding: 2px 5px;
+    border-radius: 50%;
+    min-width: 18px;
+    text-align: center;
+}
+
+/* Améliorations responsive */
+@media (max-width: 768px) {
+    .excel-container {
+        margin: 5px;
+        border-radius: 5px;
+    }
+    
+    .ribbon {
+        padding: 5px;
+        font-size: 12px;
+    }
+    
+    .ribbon-button {
+        padding: 4px 8px;
+        font-size: 11px;
+    }
+}
+
+/* Styles pour l'impression */
+@media print {
+    .ribbon, .tabs-container, .formula-bar, .status-bar {
+        display: none !important;
+    }
+    
+    .excel-container {
+        box-shadow: none;
+        border: 1px solid #ccc;
+    }
+    
+    .tab-content {
+        display: block !important;
+    }
+}
+
+/* Scrollbar personnalisée */
+.custom-scrollbar::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+    background: #0F5B9A;
+    border-radius: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #0a477a;
+}
+
+/* Tooltip personnalisé */
+.custom-tooltip {
+    position: relative;
+    display: inline-block;
+}
+
+.custom-tooltip .tooltip-text {
+    visibility: hidden;
+    background-color: #333;
+    color: #fff;
+    text-align: center;
+    padding: 5px 10px;
+    border-radius: 4px;
+    position: absolute;
+    z-index: 1000;
+    bottom: 125%;
+    left: 50%;
+    transform: translateX(-50%);
+    white-space: nowrap;
+    font-size: 12px;
+}
+
+.custom-tooltip:hover .tooltip-text {
+    visibility: visible;
+}
+
+/* Styles pour les états de chargement */
+.loading-state {
+    opacity: 0.7;
+    pointer-events: none;
+}
+
+.loading-state::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.7);
+    z-index: 100;
+}
+
+/* Animation pour les nouvelles données */
+@keyframes highlight {
+    0% { background-color: #ffffcc; }
+    100% { background-color: transparent; }
+}
+
+.new-data {
+    animation: highlight 2s ease-out;
+}
+
+/* Styles pour les messages toast */
+.toast-message {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: #27ae60;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 5px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+    z-index: 1000;
+    display: none;
+}
+
+.toast-message.error {
+    background: #e74c3c;
+}
+
+.toast-message.warning {
+    background: #f39c12;
+}
+
+.toast-message.info {
+    background: #3498db;
+}
