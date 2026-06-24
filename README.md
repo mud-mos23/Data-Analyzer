@@ -2,6 +2,8 @@
 
 Plateforme d'analyse statistique interactive pour fichiers CSV et Excel. Construite avec Flask et Python, elle offre une interface moderne type tableur pour explorer, visualiser et modéliser vos données.
 
+![Dashboard](static/dashboard.png)
+
 ## Fonctionnalités
 
 - **Import de données** : CSV et Excel (.xlsx, .xls) jusqu'à 50 Mo avec détection automatique d'encodage
@@ -78,7 +80,8 @@ Data-Analyzer/
 ├── static/
 │   ├── style.css           # Styles modernisés
 │   ├── script.js           # Logique frontend (tabs, charts, upload)
-│   └── favicon.png         # Icône du site
+│   ├── favicon.png         # Icône du site
+│   └── dashboard.png       # Capture d'écran du dashboard
 └── templates/
     ├── excel_dashboard.html # Interface principale
     ├── index.html           # Page d'accueil alternative
