@@ -26,25 +26,27 @@ class DataAnalyzer:
     
     def _clean_dataframe(self, df):
         """Nettoyer le dataframe"""
-        # Convertir les virgules décimales en points
+        if df.empty:
+            return df
+
         for col in df.columns:
-            # Essayer de convertir les colonnes numériques avec virgules
             try:
-                # Remplacer les virgules par des points
                 if df[col].dtype == 'object':
-                    # Vérifier si ce sont des nombres avec virgules
-                    sample = df[col].dropna().iloc[0] if not df[col].dropna().empty else None
-                    if sample and isinstance(sample, str) and ',' in sample and sample.replace(',', '').replace('.', '').isdigit():
-                        df[col] = df[col].astype(str).str.replace(',', '.')
-                
-                # Convertir en numérique
+                    non_null = df[col].dropna()
+                    if not non_null.empty:
+                        sample = str(non_null.iloc[0])
+                        if ',' in sample:
+                            if '.' in sample:
+                                if sample.replace(',', '').replace('.', '').replace('-', '').isdigit():
+                                    df[col] = df[col].astype(str).str.replace(',', '')
+                            elif sample.replace(',', '').replace('-', '').isdigit():
+                                df[col] = df[col].astype(str).str.replace(',', '.')
+
                 df[col] = pd.to_numeric(df[col], errors='ignore')
             except:
                 continue
-        
-        # Remplacer les NaN par None
+
         df = df.replace({np.nan: None, pd.NA: None})
-        
         return df
     
     def _get_numeric_columns(self):
@@ -52,12 +54,10 @@ class DataAnalyzer:
         numeric_cols = []
         for col in self.df.columns:
             try:
-                # Vérifier si la colonne est numérique
                 if pd.api.types.is_numeric_dtype(self.df[col]):
                     numeric_cols.append(col)
                 else:
-                    # Essayer de convertir
-                    pd.to_numeric(self.df[col])
+                    self.df[col] = pd.to_numeric(self.df[col], errors='coerce')
                     numeric_cols.append(col)
             except:
                 continue
@@ -120,6 +120,9 @@ class DataAnalyzer:
                     'count': int(len(col_data)),
                     'mean': float(col_data.mean()) if col_data.mean() is not None else None,
                     'std': float(col_data.std()) if col_data.std() is not None else None,
+                    'variance': float(col_data.var()) if col_data.var() is not None else None,
+                    'skewness': float(col_data.skew()) if col_data.skew() is not None else None,
+                    'kurtosis': float(col_data.kurtosis()) if col_data.kurtosis() is not None else None,
                     'min': float(col_data.min()) if col_data.min() is not None else None,
                     '25%': float(col_data.quantile(0.25)) if col_data.quantile(0.25) is not None else None,
                     '50%': float(col_data.quantile(0.50)) if col_data.quantile(0.50) is not None else None,
@@ -415,6 +418,30 @@ def test_excel():
     return excel_buffer.getvalue(), 200, {
         'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
         'Content-Disposition': 'attachment; filename=test_donnees.xlsx'
+    }
+
+@app.route("/test_csv", methods=["GET"])
+def test_csv():
+    """Générer un fichier CSV de test"""
+    import io
+
+    data = {
+        'Date': ['2025-04-01', '2025-04-02', '2025-04-03', '2025-04-04', '2025-04-05'],
+        'Temperature': [59.40, 53.60, 51.40, 50.80, 57.40],
+        'Rainfall': [0.74, 0.28, 0.14, 0.06, 0.79],
+        'IceCreamsSold': [61, 33, 21, 23, 51],
+        'DayOfWeek': ['Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
+        'Month': ['April', 'April', 'April', 'April', 'April']
+    }
+
+    df = pd.DataFrame(data)
+    csv_buffer = io.StringIO()
+    df.to_csv(csv_buffer, index=False)
+    csv_buffer.seek(0)
+
+    return csv_buffer.getvalue(), 200, {
+        'Content-Type': 'text/csv',
+        'Content-Disposition': 'attachment; filename=test_donnees.csv'
     }
 
 @app.route("/install_guide", methods=["GET"])

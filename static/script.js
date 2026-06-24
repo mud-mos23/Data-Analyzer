@@ -451,19 +451,20 @@ function loadOverviewContent(container) {
                                 <tr><th>Statistique</th><th>Valeur</th></tr>
                 `;
                 
+                const fmt = (v, d = 4) => v != null ? Number(v).toFixed(d) : 'N/A';
                 const statEntries = [
                     ['Count', columnStats.count],
-                    ['Mean', columnStats.mean.toFixed(4)],
-                    ['Std Dev', columnStats.std.toFixed(4)],
-                    ['Min', columnStats.min.toFixed(4)],
-                    ['25%', columnStats['25%'].toFixed(4)],
-                    ['Median', columnStats['50%'].toFixed(4)],
-                    ['75%', columnStats['75%'].toFixed(4)],
-                    ['Max', columnStats.max.toFixed(4)],
-                    ['Variance', columnStats.variance.toFixed(4)],
-                    ['Skewness', columnStats.skewness.toFixed(4)],
-                    ['Kurtosis', columnStats.kurtosis.toFixed(4)],
-                    ['Missing', columnStats.missing]
+                    ['Mean', fmt(columnStats.mean)],
+                    ['Std Dev', fmt(columnStats.std)],
+                    ['Min', fmt(columnStats.min)],
+                    ['25%', fmt(columnStats['25%'])],
+                    ['Median', fmt(columnStats['50%'])],
+                    ['75%', fmt(columnStats['75%'])],
+                    ['Max', fmt(columnStats.max)],
+                    ['Variance', fmt(columnStats.variance)],
+                    ['Skewness', fmt(columnStats.skewness)],
+                    ['Kurtosis', fmt(columnStats.kurtosis)],
+                    ['Missing', columnStats.missing != null ? columnStats.missing : 0]
                 ];
                 
                 statEntries.forEach(([label, value]) => {
@@ -508,11 +509,12 @@ function loadOverviewContent(container) {
                 const strengthClass = item.strength === 'Forte' ? 'excel-alert alert-success' : 
                                      item.strength === 'Modérée' ? 'excel-alert alert-warning' : 
                                      'excel-alert alert-info';
+                const corrVal = item.correlation != null ? Number(item.correlation).toFixed(4) : 'N/A';
                 
                 html += `
                     <tr>
                         <td>${item.variables}</td>
-                        <td>${item.correlation.toFixed(4)}</td>
+                        <td>${corrVal}</td>
                         <td><span class="${strengthClass}" style="padding: 2px 8px; display: inline-block;">${item.strength}</span></td>
                         <td>${getCorrelationInterpretation(item.correlation)}</td>
                     </tr>
@@ -605,13 +607,16 @@ function loadOverviewContent(container) {
             `;
             
             regression.simple_regressions.slice(0, 20).forEach(reg => {
+                const r2 = reg.r_squared != null ? Number(reg.r_squared).toFixed(4) : 'N/A';
+                const coef = reg.coefficient != null ? Number(reg.coefficient).toFixed(4) : 'N/A';
+                const pval = reg.p_value != null ? Number(reg.p_value).toFixed(6) : 'N/A';
                 html += `
                     <tr>
                         <td>${reg.dependent}</td>
                         <td>${reg.independent}</td>
-                        <td>${reg.r_squared.toFixed(4)}</td>
-                        <td>${reg.coefficient.toFixed(4)}</td>
-                        <td>${reg.p_value.toFixed(6)}</td>
+                        <td>${r2}</td>
+                        <td>${coef}</td>
+                        <td>${pval}</td>
                         <td>
                             <span style="color: ${reg.significant ? 'green' : 'red'};">
                                 ${reg.significant ? '✓ Oui' : '✗ Non'}
@@ -636,15 +641,16 @@ function loadOverviewContent(container) {
                         <div class="card-body">
                 `;
                 
-                regression.multiple_regressions.forEach((reg, idx) => {
+                    regression.multiple_regressions.forEach((reg, idx) => {
+                    const fmt = (v, d) => v != null ? Number(v).toFixed(d) : 'N/A';
                     html += `
                         <div style="margin-bottom: 20px; border: 1px solid var(--excel-border); padding: 10px; border-radius: 4px;">
                             <h6 style="margin-bottom: 10px; color: var(--excel-blue);">
                                 <i class="fas fa-bullseye"></i> Variable dépendante: ${reg.dependent}
                             </h6>
-                            <p><strong>R²:</strong> ${reg.r_squared.toFixed(4)} | 
-                               <strong>R² ajusté:</strong> ${reg.adj_r_squared.toFixed(4)} | 
-                               <strong>F-statistic:</strong> ${reg.f_statistic.toFixed(2)} (p=${reg.f_pvalue.toFixed(6)})</p>
+                            <p><strong>R²:</strong> ${fmt(reg.r_squared, 4)} | 
+                               <strong>R² ajusté:</strong> ${fmt(reg.adj_r_squared, 4)} | 
+                               <strong>F-statistic:</strong> ${fmt(reg.f_statistic, 2)} (p=${fmt(reg.f_pvalue, 6)})</p>
                             
                             <table class="excel-table" style="margin-top: 10px;">
                                 <tr>
@@ -659,8 +665,8 @@ function loadOverviewContent(container) {
                         html += `
                             <tr>
                                 <td>${varName}</td>
-                                <td>${coefInfo.coef.toFixed(4)}</td>
-                                <td>${coefInfo.p_value.toFixed(6)}</td>
+                                <td>${fmt(coefInfo.coef, 4)}</td>
+                                <td>${fmt(coefInfo.p_value, 6)}</td>
                                 <td>
                                     <span style="color: ${coefInfo.significant ? 'green' : 'red'};">
                                         ${coefInfo.significant ? '✓ Oui' : '✗ Non'}
@@ -709,14 +715,18 @@ function loadOverviewContent(container) {
                 `;
                 
                 tests.t_tests.forEach(test => {
+                    const m1 = test.mean1 != null ? Number(test.mean1).toFixed(4) : 'N/A';
+                    const m2 = test.mean2 != null ? Number(test.mean2).toFixed(4) : 'N/A';
+                    const tstat = test.t_statistic != null ? Number(test.t_statistic).toFixed(4) : 'N/A';
+                    const pval = test.p_value != null ? Number(test.p_value).toFixed(6) : 'N/A';
                     html += `
                         <tr>
                             <td>${test.variable1}</td>
                             <td>${test.variable2}</td>
-                            <td>${test.mean1.toFixed(4)}</td>
-                            <td>${test.mean2.toFixed(4)}</td>
-                            <td>${test.t_statistic.toFixed(4)}</td>
-                            <td>${test.p_value.toFixed(6)}</td>
+                            <td>${m1}</td>
+                            <td>${m2}</td>
+                            <td>${tstat}</td>
+                            <td>${pval}</td>
                             <td>
                                 <span style="color: ${test.significant ? 'green' : 'red'};">
                                     ${test.significant ? '✓ Oui' : '✗ Non'}
@@ -747,15 +757,18 @@ function loadOverviewContent(container) {
                 `;
                 
                 tests.normality_tests.forEach(test => {
-                    const skewInterpretation = Math.abs(test.skewness) < 0.5 ? 'Symétrique' : 
-                                               Math.abs(test.skewness) < 1 ? 'Modérément asymétrique' : 
-                                               'Fortement asymétrique';
+                    const skew = test.skewness;
+                    const skewInterpretation = skew != null
+                        ? (Math.abs(skew) < 0.5 ? 'Symétrique' :
+                           Math.abs(skew) < 1 ? 'Modérément asymétrique' :
+                           'Fortement asymétrique')
+                        : 'N/A';
                     
                     html += `
                         <tr>
                             <td>${test.variable}</td>
-                            <td>${test.skewness.toFixed(4)}</td>
-                            <td>${test.kurtosis.toFixed(4)}</td>
+                            <td>${skew != null ? Number(skew).toFixed(4) : 'N/A'}</td>
+                            <td>${test.kurtosis != null ? Number(test.kurtosis).toFixed(4) : 'N/A'}</td>
                             <td>
                                 <span style="color: ${test.is_normal ? 'green' : 'red'};">
                                     ${test.is_normal ? '✓ Oui' : '✗ Non'}
@@ -799,8 +812,8 @@ function loadOverviewContent(container) {
                                 </tr>
                                 <tr>
                                     <td>${ts.stationarity_test.variable}</td>
-                                    <td>${ts.stationarity_test.adf_statistic.toFixed(4)}</td>
-                                    <td>${ts.stationarity_test.p_value.toFixed(6)}</td>
+                                    <td>${ts.stationarity_test.adf_statistic != null ? Number(ts.stationarity_test.adf_statistic).toFixed(4) : 'N/A'}</td>
+                                    <td>${ts.stationarity_test.p_value != null ? Number(ts.stationarity_test.p_value).toFixed(6) : 'N/A'}</td>
                                     <td>
                                         <span style="color: ${ts.stationarity_test.is_stationary ? 'green' : 'red'};">
                                             ${ts.stationarity_test.is_stationary ? '✓ Oui' : '✗ Non'}
